@@ -1,8 +1,6 @@
-package avutils
+package utils
 
 import (
-	"github.com/Benbentwo/bb/pkg/cmd/errors"
-	"github.com/Benbentwo/bb/pkg/log"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,6 +9,8 @@ import (
 )
 
 const (
+	ConfigDirEnvVar         = "BB_HOME"
+	ConfigDirFolderName     = ".bb"
 	DefaultWritePermissions = 0760
 )
 
@@ -26,13 +26,13 @@ func HomeDir() string {
 }
 
 // Checks fi the BB_HOME variable is set, if it isn't it makes it in the default directory
-func ConfigDir() (string, error) {
-	path := os.Getenv("BB_HOME")
+func ConfigDir(envVar string, configFolder string) (string, error) {
+	path := os.Getenv(envVar)
 	if path != "" {
 		return path, nil
 	}
 	h := HomeDir()
-	path = filepath.Join(h, ".bb")
+	path = filepath.Join(h, configFolder)
 	err := os.MkdirAll(path, DefaultWritePermissions)
 	if err != nil {
 		return "", err
@@ -51,8 +51,8 @@ func KubeConfigFile() string {
 }
 
 // JXBinLocation finds the bb config directory and creates a bin directory inside it if it does not already exist. Returns the bb bin path
-func AVBinLocation() (string, error) {
-	c, err := ConfigDir()
+func BinLocation() (string, error) {
+	c, err := ConfigDir(ConfigDirEnvVar, ConfigDirFolderName)
 	if err != nil {
 		return "", err
 	}
@@ -65,48 +65,41 @@ func AVBinLocation() (string, error) {
 }
 
 // JXBinaryLocation Returns the path to the currently installed JX binary.
-func AVBinaryLocation() (string, error) {
-	return AvBinaryLocation(os.Executable)
+func ThisBinaryLocation() (string, error) {
+	return BinaryLocation(os.Executable)
 }
 
-func AvBinaryLocation(osExecutable func() (string, error)) (string, error) {
-	avProcessBinary, err := osExecutable()
+func BinaryLocation(osExecutable func() (string, error)) (string, error) {
+	processBinary, err := osExecutable()
 	if err != nil {
-		log.Logger().Debugf("avProcessBinary error %s", err)
-		return avProcessBinary, err
+		return processBinary, err
 	}
-	log.Logger().Debugf("avProcessBinary %s", avProcessBinary)
 	// make it absolute
-	avProcessBinary, err = filepath.Abs(avProcessBinary)
+	processBinary, err = filepath.Abs(processBinary)
 	if err != nil {
-		log.Logger().Debugf("avProcessBinary error %s", err)
-		return avProcessBinary, err
+		return processBinary, err
 	}
-	log.Logger().Debugf("avProcessBinary %s", avProcessBinary)
 
 	// if the process was started form a symlink go and get the absolute location.
-	avProcessBinary, err = filepath.EvalSymlinks(avProcessBinary)
+	processBinary, err = filepath.EvalSymlinks(processBinary)
 	if err != nil {
-		log.Logger().Debugf("avProcessBinary error %s", err)
-		return avProcessBinary, err
+		return processBinary, err
 	}
 
-	log.Logger().Debugf("avProcessBinary %s", avProcessBinary)
-	path := filepath.Dir(avProcessBinary)
-	log.Logger().Debugf("dir from '%s' is '%s'", avProcessBinary, path)
+	path := filepath.Dir(processBinary)
 	return path, nil
 }
 func ListSubDirectories(inputDir string) []string {
 	inputDir = HomeReplace(inputDir)
 	files, err := ioutil.ReadDir(inputDir)
 	if err != nil {
-		log.Logger().Errorf("Couldn't list files in %s", inputDir)
+		Logger().Errorf("Couldn't list files in %s", inputDir)
 	}
 	var splice = make([]string, 0)
 
 	for _, f := range files {
 		if f.IsDir() {
-			log.Logger().Debugln(f.Name())
+			Logger().Debugln(f.Name())
 			splice = append(splice, f.Name())
 		}
 	}
@@ -118,13 +111,13 @@ func ListSubDirectories(inputDir string) []string {
 func ListSubDirectoriesRecusively(inputDir string) []string {
 	var splice = make([]string, 0)
 	e := filepath.Walk(inputDir, func(path string, info os.FileInfo, err error) error {
-		// log.Debug("Walking Path: %s", path)
+		// Debug("Walking Path: %s", path)
 		if err == nil && info.IsDir() {
 			splice = append(splice, path)
 		}
 		return nil
 	})
-	errors.Check(e)
+	Check(e)
 	return splice
 }
 
@@ -132,13 +125,13 @@ func ListFilesInDir(inputDir string) []string {
 	inputDir = HomeReplace(inputDir)       //replace ~
 	files, err := ioutil.ReadDir(inputDir) //get an array of file objects
 	if err != nil {
-		log.Logger().Errorf("Couldn't list files in %s", inputDir)
+		Logger().Errorf("Couldn't list files in %s", inputDir)
 	}
 	var splice = make([]string, 0) //create an empty array
 
 	for _, f := range files { //for each file, get the name and append it to the list
 		if !f.IsDir() {
-			log.Logger().Debugln(f.Name())
+			Logger().Debugln(f.Name())
 			splice = append(splice, f.Name())
 		}
 	}
@@ -148,7 +141,7 @@ func ListFilesInDirFilter(inputDir string, filter string) []string {
 	inputDir = HomeReplace(inputDir)       //replace ~
 	files, err := ioutil.ReadDir(inputDir) //get an array of file objects
 	if err != nil {
-		log.Logger().Errorf("Couldn't list files in %s", inputDir)
+		Logger().Errorf("Couldn't list files in %s", inputDir)
 	}
 	var splice = make([]string, 0) //create an empty array
 
@@ -158,7 +151,7 @@ func ListFilesInDirFilter(inputDir string, filter string) []string {
 			return nil
 		}
 		if !f.IsDir() && matched {
-			log.Logger().Debugln(f.Name())
+			Logger().Debugln(f.Name())
 			splice = append(splice, f.Name())
 		}
 	}
