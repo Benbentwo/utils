@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/jenkins-x/jx/pkg/cmd/opts"
 	"gopkg.in/AlecAivazis/survey.v1"
+	"gopkg.in/AlecAivazis/survey.v1/terminal"
 	"io"
 )
 
