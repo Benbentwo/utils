@@ -31,9 +31,9 @@ func PickValue(message string, defaultChoice string, help string, secret bool) (
 	name := ""
 
 	if secret {
-		return PromptValuePassword(message, defaultChoice, help)
+		return PromptValuePassword(message, help)
 	} else {
-		return PromptValue(message, help)
+		return PromptValue(message, defaultChoice, help)
 	}
 	return name, err
 }
