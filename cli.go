@@ -27,6 +27,45 @@ func Pick(message string, names []string, defaultChoice string) (string, error) 
 	return name, err
 }
 
+func PickValue(message string, defaultChoice string, help string, secret bool) (string, error) {
+	name := ""
+
+	if secret {
+		return PromptValuePassword(message, defaultChoice, help)
+	} else {
+		return PromptValue(message, help)
+	}
+	return name, err
+}
+
+func PromptValue(message string, defaultChoice string, help string) (string, error) {
+	name := ""
+	prompt := &survey.Select{
+		Message: message,
+		Default: defaultChoice,
+		Help:	 help,
+	}
+
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
+	err := survey.AskOne(prompt, &name, nil, surveyOpts)
+	return name, err
+}
+func PromptValuePassword(message string, help string) (string, error) {
+	name := ""
+	prompt := &survey.Password{
+		Message: message,
+		Default: defaultChoice,
+		Help:	 help,
+	}
+
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
+	err := survey.AskOne(prompt, &name, nil, surveyOpts)
+	return name, err
+}
+
+
 // PickValue gets an answer to a prompt from a user's free-form input
 func PickValueFromPath(message string, defaultValue string, required bool, help string, in terminal.FileReader, out terminal.FileWriter, outErr io.Writer) (string, error) {
 	answer := ""
