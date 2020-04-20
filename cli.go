@@ -35,7 +35,6 @@ func PickValue(message string, defaultChoice string, help string, secret bool) (
 	} else {
 		return PromptValue(message, defaultChoice, help)
 	}
-	return name, err
 }
 
 func PromptValue(message string, defaultChoice string, help string) (string, error) {
@@ -55,7 +54,6 @@ func PromptValuePassword(message string, help string) (string, error) {
 	name := ""
 	prompt := &survey.Password{
 		Message: message,
-		Default: defaultChoice,
 		Help:	 help,
 	}
 
