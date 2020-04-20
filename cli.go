@@ -28,8 +28,6 @@ func Pick(message string, names []string, defaultChoice string) (string, error) 
 }
 
 func PickValue(message string, defaultChoice string, help string, secret bool) (string, error) {
-	name := ""
-
 	if secret {
 		return PromptValuePassword(message, help)
 	} else {
