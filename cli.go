@@ -4,6 +4,7 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 	"gopkg.in/AlecAivazis/survey.v1/terminal"
 	"io"
+	"os"
 )
 
 func Pick(message string, names []string, defaultChoice string) (string, error) {

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"github.com/go-errors/errors"
 	"strings"
@@ -17,7 +18,7 @@ func FileExists(path string) (bool, error) {
 	if os.IsNotExist(err) {
 		return false, nil
 	}
-	return false, errors.Wrapf(err, "failed to check if file exists %s", path)
+	return false, errors.Errorf("failed to check if file exists %s", path)
 }
 
 // DirExists checks if path exists and is a directory
@@ -83,4 +84,12 @@ func FindMatchesInFile(s string, pathToFile string) ([]int, error) {
 	}
 	log.Printf("Found %s", listLineNumbers)
 	return listLineNumbers, nil
+}
+
+// StripTrailingSlash removes any trailing forward slashes on the URL
+func StripTrailingSlash(url string) string {
+	if url[len(url)-1:] == "/" {
+		return url[0 : len(url)-1]
+	}
+	return url
 }
