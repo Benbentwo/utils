@@ -2,12 +2,11 @@ package utils
 
 import (
 	"bufio"
-	"github.com/jenkins-x/jx/pkg/log"
 	"os"
+	"github.com/go-errors/errors"
 	"strings"
 )
 
-var logs = log.Logger()
 
 // FileExists checks if path exists and is a file
 func FileExists(path string) (bool, error) {
@@ -35,12 +34,12 @@ func DirExists(path string) (bool, error) {
 func DoesFileContainString(s string, pathToFile string) (bool, int, error) {
 	replacer := strings.NewReplacer("~", os.Getenv("HOME"))
 	pathToFile = replacer.Replace(pathToFile)
-	logs.Debugf("Looking for text : %s", s)
-	logs.Debugf("In File          : %s", pathToFile)
+	log.Printf("Looking for text : %s", s)
+	log.Printf("In File          : %s", pathToFile)
 
 	f, err := os.Open(pathToFile)
 	if err != nil {
-		logs.Errorf("Error Opening file: %s, Error: %s", pathToFile, err)
+		errors.Errorf("Error Opening file: %s, Error: %s", pathToFile, err)
 		return false, -1, err
 	}
 	defer f.Close()
@@ -62,12 +61,12 @@ func DoesFileContainString(s string, pathToFile string) (bool, int, error) {
 func FindMatchesInFile(s string, pathToFile string) ([]int, error) {
 	replacer := strings.NewReplacer("~", os.Getenv("HOME"))
 	pathToFile = replacer.Replace(pathToFile)
-	logs.Debugf("Looking for text : %s", s)
-	logs.Debugf("In File          : %s", pathToFile)
+	log.Printf("Looking for text : %s", s)
+	log.Printf("In File          : %s", pathToFile)
 	var listLineNumbers []int
 	f, err := os.Open(pathToFile)
 	if err != nil {
-		logs.Errorf("Error Opening file: %s, Error: %s", pathToFile, err)
+		errors.Errorf("Error Opening file: %s, Error: %s", pathToFile, err)
 		return listLineNumbers, err
 	}
 	defer f.Close()
@@ -82,6 +81,6 @@ func FindMatchesInFile(s string, pathToFile string) ([]int, error) {
 	if someError := scanner.Err(); someError != nil {
 		return listLineNumbers, err
 	}
-	logs.Debugf("Found %s", listLineNumbers)
+	log.Printf("Found %s", listLineNumbers)
 	return listLineNumbers, nil
 }

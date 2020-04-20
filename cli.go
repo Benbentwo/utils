@@ -1,13 +1,12 @@
 package utils
 
 import (
-	"github.com/jenkins-x/jx/pkg/cmd/opts"
 	"gopkg.in/AlecAivazis/survey.v1"
 	"gopkg.in/AlecAivazis/survey.v1/terminal"
 	"io"
 )
 
-func Pick(o *opts.CommonOptions, message string, names []string, defaultChoice string) (string, error) {
+func Pick(message string, names []string, defaultChoice string) (string, error) {
 	if len(names) == 0 {
 		return "", nil
 	}
@@ -21,7 +20,8 @@ func Pick(o *opts.CommonOptions, message string, names []string, defaultChoice s
 		Default: defaultChoice,
 	}
 
-	surveyOpts := survey.WithStdio(o.In, o.Out, o.Err)
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
 	err := survey.AskOne(prompt, &name, nil, surveyOpts)
 	return name, err
 }
