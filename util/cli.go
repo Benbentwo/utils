@@ -17,6 +17,15 @@ func PromptForMissingString(field *string, prompt string, help string, secret bo
 	}
 	return nil
 }
+// TODO add validator
+func PromptForMissingInt(field *int, prompt string, help string, secret bool) error {
+	var err error
+	*field, err = PickValue(prompt, "", help, secret)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func Pick(message string, names []string, defaultChoice string) (string, error) {
 	if len(names) == 0 {
