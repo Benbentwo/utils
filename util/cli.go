@@ -5,6 +5,7 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1/terminal"
 	"io"
 	"os"
+	"strconv"
 )
 
 func PromptForMissingString(field *string, prompt string, help string, secret bool) error {
