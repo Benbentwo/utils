@@ -20,7 +20,11 @@ func PromptForMissingString(field *string, prompt string, help string, secret bo
 // TODO add validator
 func PromptForMissingInt(field *int, prompt string, help string, secret bool) error {
 	var err error
-	*field, err = PickValue(prompt, "", help, secret)
+	val, err := PickValue(prompt, "", help, secret)
+	if err != nil {
+		return err
+	}
+	*field, err = strconv.Atoi(val)
 	if err != nil {
 		return err
 	}
