@@ -1,13 +1,12 @@
-package utils
+package util
 
 import (
 	"bufio"
+	"github.com/go-errors/errors"
 	"log"
 	"os"
-	"github.com/go-errors/errors"
 	"strings"
 )
-
 
 // FileExists checks if path exists and is a file
 func FileExists(path string) (bool, error) {

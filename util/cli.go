@@ -1,4 +1,4 @@
-package utils
+package util
 
 import (
 	"gopkg.in/AlecAivazis/survey.v1"
@@ -6,6 +6,17 @@ import (
 	"io"
 	"os"
 )
+
+func PromptForMissingString(field *string, prompt string, help string, secret bool) error {
+	if *field == "" {
+		var err error
+		*field, err = PickValue(prompt, "", help, secret)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 func Pick(message string, names []string, defaultChoice string) (string, error) {
 	if len(names) == 0 {
@@ -20,7 +31,6 @@ func Pick(message string, names []string, defaultChoice string) (string, error) 
 		Options: names,
 		Default: defaultChoice,
 	}
-
 
 	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
 	err := survey.AskOne(prompt, &name, nil, surveyOpts)
@@ -37,12 +47,11 @@ func PickValue(message string, defaultChoice string, help string, secret bool) (
 
 func PromptValue(message string, defaultChoice string, help string) (string, error) {
 	name := ""
-	prompt := &survey.Select{
+	prompt := &survey.Input{
 		Message: message,
 		Default: defaultChoice,
-		Help:	 help,
+		Help:    help,
 	}
-
 
 	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
 	err := survey.AskOne(prompt, &name, nil, surveyOpts)
@@ -52,15 +61,13 @@ func PromptValuePassword(message string, help string) (string, error) {
 	name := ""
 	prompt := &survey.Password{
 		Message: message,
-		Help:	 help,
+		Help:    help,
 	}
-
 
 	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
 	err := survey.AskOne(prompt, &name, nil, surveyOpts)
 	return name, err
 }
-
 
 // PickValue gets an answer to a prompt from a user's free-form input
 func PickValueFromPath(message string, defaultValue string, required bool, help string, in terminal.FileReader, out terminal.FileWriter, outErr io.Writer) (string, error) {
