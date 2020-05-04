@@ -18,6 +18,7 @@ func PromptForMissingString(field *string, prompt string, help string, secret bo
 	}
 	return nil
 }
+
 // TODO add validator
 func PromptForMissingInt(field *int, prompt string, help string, secret bool) error {
 	var err error
@@ -102,4 +103,36 @@ func PickValueFromPath(message string, defaultValue string, required bool, help 
 		return "", err
 	}
 	return answer, nil
+}
+
+// IOFileHandles is a struct for holding CommonOptions' In, Out, and Err I/O handles, to simplify function calls.
+type IOFileHandles struct {
+	Err io.Writer
+	In  terminal.FileReader
+	Out terminal.FileWriter
+}
+
+// Confirm prompts the user to confirm something
+func ConfirmSpecificIO(message string, defaultValue bool, help string, handles IOFileHandles) (bool, error) {
+	answer := defaultValue
+	prompt := &survey.Confirm{
+		Message: message,
+		Default: defaultValue,
+		Help:    help,
+	}
+	surveyOpts := survey.WithStdio(handles.In, handles.Out, handles.Err)
+	err := survey.AskOne(prompt, &answer, nil, surveyOpts)
+	if err != nil {
+		return false, err
+	}
+	Blank()
+	return answer, nil
+}
+
+func Confirm(message string, defaultValue bool, help string) (bool, error) {
+	return ConfirmSpecificIO(message, defaultValue, help, IOFileHandles{
+		Err: os.Stderr,
+		In:  os.Stdin,
+		Out: os.Stdout,
+	})
 }
