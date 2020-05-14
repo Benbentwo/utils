@@ -122,6 +122,21 @@ func PromptValuePassword(message string, help string) (string, error) {
 	return name, err
 }
 
+func MustPromptValuePassword(message string, help string) string {
+	name := ""
+	prompt := &survey.Password{
+		Message: message,
+		Help:    help,
+	}
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
+	err := survey.AskOne(prompt, &name, nil, surveyOpts)
+	if err != nil {
+		Logger().Fatalf("Must Prompt Password failed: %s", err)
+	}
+	return name
+}
+
 // PickValue gets an answer to a prompt from a user's free-form input
 func PickValueFromPath(message string, defaultValue string, required bool, help string, in terminal.FileReader, out terminal.FileWriter, outErr io.Writer) (string, error) {
 	answer := ""
