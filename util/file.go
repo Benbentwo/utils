@@ -3,7 +3,6 @@ package util
 import (
 	"bufio"
 	"github.com/go-errors/errors"
-	"log"
 	"os"
 	"strings"
 )
@@ -34,8 +33,8 @@ func DirExists(path string) (bool, error) {
 func DoesFileContainString(s string, pathToFile string) (bool, int, error) {
 	replacer := strings.NewReplacer("~", os.Getenv("HOME"))
 	pathToFile = replacer.Replace(pathToFile)
-	log.Printf("Looking for text : %s", s)
-	log.Printf("In File          : %s", pathToFile)
+	Logger().Debugf("Looking for text : %s", s)
+	Logger().Debugf("In File          : %s", pathToFile)
 
 	f, err := os.Open(pathToFile)
 	if err != nil {
@@ -61,8 +60,8 @@ func DoesFileContainString(s string, pathToFile string) (bool, int, error) {
 func FindMatchesInFile(s string, pathToFile string) ([]int, error) {
 	replacer := strings.NewReplacer("~", os.Getenv("HOME"))
 	pathToFile = replacer.Replace(pathToFile)
-	log.Printf("Looking for text : %s", s)
-	log.Printf("In File          : %s", pathToFile)
+	Logger().Debugf("Looking for text : %s", s)
+	Logger().Debugf("In File          : %s", pathToFile)
 	var listLineNumbers []int
 	f, err := os.Open(pathToFile)
 	if err != nil {
@@ -81,7 +80,7 @@ func FindMatchesInFile(s string, pathToFile string) ([]int, error) {
 	if someError := scanner.Err(); someError != nil {
 		return listLineNumbers, err
 	}
-	log.Printf("Found %s", listLineNumbers)
+	Logger().Debugf("Found %s", listLineNumbers)
 	return listLineNumbers, nil
 }
 
