@@ -52,12 +52,50 @@ func Pick(message string, names []string, defaultChoice string) (string, error) 
 	return name, err
 }
 
+func MustPick(message string, names []string, defaultChoice string) string {
+	if len(names) == 0 {
+		return ""
+	}
+	if len(names) == 1 {
+		return names[0]
+	}
+	name := ""
+	prompt := &survey.Select{
+		Message: message,
+		Options: names,
+		Default: defaultChoice,
+	}
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
+	err := survey.AskOne(prompt, &name, nil, surveyOpts)
+	if err != nil {
+		Logger().Fatalf("Must Pick failed: %s", err)
+	}
+	return name
+}
+
 func PickValue(message string, defaultChoice string, help string, secret bool) (string, error) {
 	if secret {
 		return PromptValuePassword(message, help)
 	} else {
 		return PromptValue(message, defaultChoice, help)
 	}
+}
+
+func MustPromptValue(message string, defaultChoice string, help string) string {
+	name := ""
+	prompt := &survey.Input{
+		Message: message,
+		Default: defaultChoice,
+		Help:    help,
+	}
+
+	surveyOpts := survey.WithStdio(os.Stdin, os.Stdout, os.Stderr)
+	err := survey.AskOne(prompt, &name, nil, surveyOpts)
+	if err != nil {
+		Logger().Fatalf("Must Prompt failed: %s", err)
+	}
+	return name
 }
 
 func PromptValue(message string, defaultChoice string, help string) (string, error) {
