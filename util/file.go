@@ -3,6 +3,7 @@ package util
 import (
 	"bufio"
 	"github.com/go-errors/errors"
+	"log"
 	"os"
 	"strings"
 )
