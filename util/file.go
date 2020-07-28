@@ -19,6 +19,16 @@ func FileExists(path string) (bool, error) {
 	return false, errors.Errorf("failed to check if file exists %s", path)
 }
 
+// returns true/false if a file exists, or crashes on error
+func FileMustExist(path string) bool {
+	ex, err := FileExists(path)
+	if err != nil {
+		log.Panicf("file exists failed: %s", err)
+		return false
+	}
+	return ex
+}
+
 // DirExists checks if path exists and is a directory
 func DirExists(path string) (bool, error) {
 	info, err := os.Stat(path)
