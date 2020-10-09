@@ -108,12 +108,14 @@ func ListSubDirectories(inputDir string) []string {
 
 // I realize the above function and this could be joined with a boolean parameter but with the different implementation
 // I didn't feel like doing it immediately.
-func ListSubDirectoriesRecusively(inputDir string) []string {
+func ListSubDirectoriesRecusively(inputDir string, ignoreDotFolders bool) []string {
 	var splice = make([]string, 0)
 	e := filepath.Walk(inputDir, func(path string, info os.FileInfo, err error) error {
 		// Debug("Walking Path: %s", path)
 		if err == nil && info.IsDir() {
-			splice = append(splice, path)
+			if ignoreDotFolders && string(path[0]) != "." || !ignoreDotFolders {
+				splice = append(splice, path)
+			}
 		}
 		return nil
 	})
